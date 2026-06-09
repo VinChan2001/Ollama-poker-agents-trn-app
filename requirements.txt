@@ -1,0 +1,4 @@
+treys
+requests
+fastapi
+uvicorn
