@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Ollama Poker Agents</title>
+    <link rel="stylesheet" href="/static/styles.css?v=10" />
+  </head>
+  <body>
+    <main class="shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Local Ollama Hold'em</p>
+          <h1>Ollama Poker Agents</h1>
+        </div>
+        <div class="top-status" id="topStatus">idle</div>
+      </header>
+
+      <section class="controls" aria-label="Poker controls">
+        <div class="control-group mode-control" role="radiogroup" aria-label="Run mode">
+          <button class="seg active" data-mode="Single Hand" type="button">Single Hand</button>
+          <button class="seg" data-mode="Full Tournament" type="button">Full Tournament</button>
+        </div>
+
+        <label>
+          Chips
+          <input id="startingChips" type="number" min="100" max="5000" step="50" value="300" />
+        </label>
+
+        <label class="tournament-only">
+          Blind Pace
+          <input id="handsPerLevel" type="number" min="1" max="10" step="1" value="1" />
+        </label>
+
+        <label class="tournament-only">
+          Max Hands
+          <input id="maxHands" type="number" min="1" max="100" step="1" value="12" />
+        </label>
+
+        <label>
+          Delay
+          <input id="delay" type="range" min="60" max="1800" step="20" value="360" />
+          <span id="delayValue">0.36s</span>
+        </label>
+
+        <label class="checkline">
+          <input id="revealCards" type="checkbox" checked />
+          Reveal Cards
+        </label>
+
+        <button id="startBtn" class="primary" type="button">Start Single Hand</button>
+        <button id="stepBtn" type="button" disabled>Step</button>
+        <button id="autoBtn" type="button" disabled>Pause</button>
+        <button id="musicBtn" type="button">Music Off</button>
+        <label>
+          Volume
+          <input id="musicVolume" type="range" min="0" max="100" step="5" value="85" />
+          <span id="musicVolumeValue">85%</span>
+        </label>
+        <button id="resetBtn" type="button">Reset</button>
+      </section>
+
+      <section class="stage" aria-label="Poker table">
+        <div class="table-frame">
+          <div class="table-surface">
+            <div class="scanlines"></div>
+            <div id="seats" class="seats"></div>
+
+            <div class="center-board">
+              <div class="board-meta">
+                <span id="handBadge">Hand 1</span>
+                <span id="streetBadge">Preflop</span>
+                <span id="blindBadge">10 / 20</span>
+              </div>
+              <div class="pot" id="potDisplay">POT 0</div>
+              <div class="community" id="communityCards"></div>
+              <div class="leaderboard" id="leaderboard"></div>
+            </div>
+          </div>
+        </div>
+
+        <aside class="side-panel">
+          <section class="panel model-panel">
+            <h2>Local Models</h2>
+            <div id="modelStatus" class="model-status">Checking Ollama...</div>
+          </section>
+          <section class="panel winner-panel" id="winnerPanel">
+            <h2>Winner</h2>
+            <div id="winnerText">No winner yet.</div>
+          </section>
+          <section class="panel dialogue-panel">
+            <h2>Agent Dialogue</h2>
+            <div id="dialogueLog" class="scroll-log"></div>
+          </section>
+          <section class="panel event-panel">
+            <h2>Event Feed</h2>
+            <div id="eventLog" class="scroll-log"></div>
+          </section>
+        </aside>
+      </section>
+    </main>
+
+    <template id="seatTemplate">
+      <article class="seat">
+        <div class="character"></div>
+        <div class="seat-copy">
+          <div class="name-row">
+            <h3></h3>
+            <span class="dealer-dot">D</span>
+          </div>
+          <p class="model"></p>
+          <div class="stats">
+            <span class="chips"></span>
+            <span class="status"></span>
+          </div>
+          <div class="commit"></div>
+          <div class="hole-cards"></div>
+          <div class="bubble"></div>
+        </div>
+      </article>
+    </template>
+
+    <aside id="agentDossier" class="agent-dossier" aria-hidden="true"></aside>
+
+    <script src="/static/app.js?v=10"></script>
+  </body>
+</html>
