@@ -4,7 +4,7 @@ A local Texas Hold'em simulator where five Ollama-backed AI agents play hands an
 
 ## What It Does
 
-- Runs a single poker hand or a full escalating-blind tournament.
+- Runs a single poker hand in the website. Tournament code is still available for CLI/local experiments.
 - Streams game events live into a FastAPI-powered website.
 - Shows each local model, stack size, cards, betting action, and reasoning dialogue.
 - Uses five agent personalities mapped to local Ollama models.
@@ -78,7 +78,7 @@ If the browser has cached old static files, hard refresh with `Cmd+Shift+R`.
 ## Controls
 
 - **Single Hand** — runs one streamed hand.
-- **Full Tournament** — runs tournament mode until one player wins or the max hand limit is reached.
+- **Full Tournament** — disabled in the website; clicking it shows the laptop takeoff warning and keeps Single Hand selected.
 - **Reveal Cards** — shows hole cards as they become available.
 - **Music Off** — click once to start the retro loop. Browsers require a user gesture before audio can play.
 - Hover or focus an agent card to see its personality dossier.

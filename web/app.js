@@ -44,6 +44,9 @@ const PLAYER_META = {
   },
 };
 const SUITS = { s: "♠", h: "♥", d: "♦", c: "♣" };
+const SINGLE_HAND_MODE = "Single Hand";
+const TOURNAMENT_MODE = "Full Tournament";
+const TAKEOFF_MESSAGE = "My laptop will take off. Please select Single Hand.";
 const SPRITES = {
   Vin: [
     "00111100",
@@ -162,7 +165,10 @@ const els = {
   eventLog: document.querySelector("#eventLog"),
   seatTemplate: document.querySelector("#seatTemplate"),
   agentDossier: document.querySelector("#agentDossier"),
+  takeoffToast: document.querySelector("#takeoffToast"),
 };
+
+let takeoffTimer = null;
 
 function previewPlayers(startingChips) {
   return PLAYER_ORDER.map((name, index) => ({
@@ -193,15 +199,47 @@ function normalizeInt(value, fallback) {
   return Number.isFinite(parsed) ? parsed : fallback;
 }
 
-function setRunMode(mode) {
+function showTournamentTakeoff(sourceButton = null) {
+  if (sourceButton) {
+    sourceButton.classList.remove("takeoff-hit");
+    void sourceButton.offsetWidth;
+    sourceButton.classList.add("takeoff-hit");
+    window.setTimeout(() => sourceButton.classList.remove("takeoff-hit"), 420);
+  }
+
+  if (!els.takeoffToast) {
+    return;
+  }
+
+  window.clearTimeout(takeoffTimer);
+  els.takeoffToast.classList.remove("show");
+  void els.takeoffToast.offsetWidth;
+  els.takeoffToast.classList.add("show");
+  els.takeoffToast.setAttribute("aria-label", TAKEOFF_MESSAGE);
+  els.takeoffToast.setAttribute("aria-hidden", "false");
+  els.topStatus.textContent = "single hand only";
+
+  takeoffTimer = window.setTimeout(() => {
+    els.takeoffToast.classList.remove("show");
+    els.takeoffToast.setAttribute("aria-hidden", "true");
+  }, 2500);
+}
+
+function setRunMode(mode, sourceButton = null) {
+  if (mode === TOURNAMENT_MODE) {
+    showTournamentTakeoff(sourceButton);
+    mode = SINGLE_HAND_MODE;
+  }
+
   state.runMode = mode;
   els.modeButtons.forEach((button) => {
     button.classList.toggle("active", button.dataset.mode === mode);
+    button.setAttribute("aria-checked", button.dataset.mode === mode ? "true" : "false");
   });
   els.tournamentOnly.forEach((item) => {
-    item.style.display = mode === "Full Tournament" ? "grid" : "none";
+    item.style.display = mode === TOURNAMENT_MODE ? "grid" : "none";
   });
-  els.startBtn.textContent = mode === "Single Hand" ? "Start Single Hand" : "Start Tournament";
+  els.startBtn.textContent = "Start Single Hand";
   render();
 }
 
@@ -968,6 +1006,11 @@ function closeStream(statusText = "complete") {
 }
 
 async function startRun() {
+  if (state.runMode === TOURNAMENT_MODE) {
+    setRunMode(TOURNAMENT_MODE);
+    return;
+  }
+
   stopAuto();
   resetState();
   refreshModelStatus();
@@ -1052,7 +1095,7 @@ function burstConfetti() {
 }
 
 els.modeButtons.forEach((button) => {
-  button.addEventListener("click", () => setRunMode(button.dataset.mode));
+  button.addEventListener("click", () => setRunMode(button.dataset.mode, button));
 });
 
 els.delay.addEventListener("input", () => {

@@ -14,13 +14,12 @@ from tournament import (
     build_agents,
     run_single_hand_events,
     run_single_hand_events_live,
-    run_tournament_events,
-    run_tournament_events_live,
 )
 
 
 BASE_DIR = Path(__file__).resolve().parent
 WEB_DIR = BASE_DIR / "web"
+TOURNAMENT_DISABLED_MESSAGE = "My laptop will take off. Please select Single Hand."
 
 app = FastAPI(title="Ollama Poker Agents Website")
 app.mount("/static", StaticFiles(directory=WEB_DIR), name="static")
@@ -40,17 +39,18 @@ def index():
 
 @app.post("/api/run")
 def run_poker(request: RunRequest):
+    if request.run_mode == "Full Tournament":
+        return {
+            "events": [
+                {
+                    "event_type": "error",
+                    "message": TOURNAMENT_DISABLED_MESSAGE,
+                }
+            ]
+        }
+
     try:
-        if request.run_mode == "Single Hand":
-            events = list(run_single_hand_events(starting_chips=request.starting_chips))
-        else:
-            events = list(
-                run_tournament_events(
-                    starting_chips=request.starting_chips,
-                    hands_per_level=request.hands_per_level,
-                    max_hands=request.max_hands,
-                )
-            )
+        events = list(run_single_hand_events(starting_chips=request.starting_chips))
     except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc)) from exc
 
@@ -120,10 +120,13 @@ def stream_poker_events(
     if run_mode == "Single Hand":
         event_iter = run_single_hand_events_live(starting_chips=starting_chips)
     else:
-        event_iter = run_tournament_events_live(
-            starting_chips=starting_chips,
-            hands_per_level=hands_per_level,
-            max_hands=max_hands,
+        event_iter = iter(
+            [
+                {
+                    "event_type": "error",
+                    "message": TOURNAMENT_DISABLED_MESSAGE,
+                }
+            ]
         )
 
     def event_stream():

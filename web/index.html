@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Ollama Poker Agents</title>
-    <link rel="stylesheet" href="/static/styles.css?v=10" />
+    <link rel="stylesheet" href="/static/styles.css?v=11" />
   </head>
   <body>
     <main class="shell">
@@ -19,7 +19,15 @@
       <section class="controls" aria-label="Poker controls">
         <div class="control-group mode-control" role="radiogroup" aria-label="Run mode">
           <button class="seg active" data-mode="Single Hand" type="button">Single Hand</button>
-          <button class="seg" data-mode="Full Tournament" type="button">Full Tournament</button>
+          <button
+            class="seg locked"
+            data-mode="Full Tournament"
+            type="button"
+            aria-label="Full Tournament unavailable. My laptop will take off. Please select Single Hand."
+            title="My laptop will take off. Please select Single Hand."
+          >
+            Full Tournament
+          </button>
         </div>
 
         <label>
@@ -122,6 +130,18 @@
 
     <aside id="agentDossier" class="agent-dossier" aria-hidden="true"></aside>
 
-    <script src="/static/app.js?v=10"></script>
+    <div id="takeoffToast" class="takeoff-toast" role="status" aria-live="polite" aria-hidden="true">
+      <div class="takeoff-laptop" aria-hidden="true">
+        <span class="laptop-screen"></span>
+        <span class="laptop-base"></span>
+        <span class="takeoff-flame"></span>
+      </div>
+      <div class="takeoff-copy">
+        <strong>My laptop will take off.</strong>
+        <span>Please select Single Hand.</span>
+      </div>
+    </div>
+
+    <script src="/static/app.js?v=11"></script>
   </body>
 </html>
